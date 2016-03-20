@@ -3,7 +3,7 @@
 
 import {createElement, compile} from 'elliptical'
 import chai, {expect} from 'chai'
-import createProcess from '../src/process'
+import createProcess from '../src/processor'
 import {spy} from 'sinon'
 import sinonChai from 'sinon-chai'
 

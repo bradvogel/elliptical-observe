@@ -1,9 +1,8 @@
 import _ from 'lodash'
-import {compile} from 'elliptical'
 import {substrings} from './string-utils'
 import {limitIterator} from './utils'
 
-function * optionsForString (string, option, props, register) {
+function * optionsForString (string, option, props, register, traverse) {
   const observation = props.observe
     ? props.observe(string, {props: {}, children: []})
     : undefined
@@ -16,24 +15,23 @@ function * optionsForString (string, option, props, register) {
     ) : undefined
 
   if (description) {
-    const traverse = compile(description)
-    yield * traverse(option)
+    yield * traverse(description, option)
   }
 }
 
-function * optionsForSubstrings (option, props, register) {
+function * optionsForSubstrings (option, props, register, traverse) {
   const iterations = option.text == null
     ? [undefined]
     : substrings(option.text, props)
 
   for (let substring of iterations) {
     let success = false
-    yield* optionsForString(substring, option, props, register)
+    yield* optionsForString(substring, option, props, register, traverse)
   }
 }
 
-function * visit (option, {props, register}) {
-  const options = optionsForSubstrings(option, props, register)
+function * visit (option, {props, register}, traverse) {
+  const options = optionsForSubstrings(option, props, register, traverse)
   yield * limitIterator(options, props.limit)
 }
 

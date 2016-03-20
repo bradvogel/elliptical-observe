@@ -4,7 +4,6 @@
 import {createElement} from 'elliptical'
 import Observable from 'zen-observable'
 import {compileAndTraverse} from './_util'
-import Dynamic from '../src/dynamic'
 import createStore from '../src/store'
 
 import {spy} from 'sinon'
@@ -31,7 +30,7 @@ describe('dynamic', () => {
     }
 
     const store = createStore()
-    const grammar = <Dynamic observe={observe} describe={describe} />
+    const grammar = <dynamic observe={observe} describe={describe} />
     const options = compileAndTraverse(grammar, 't', store.register)
 
     expect(options).to.eql([{
@@ -60,7 +59,7 @@ describe('dynamic', () => {
       return <literal text={data} value={data} />
     }
 
-    const grammar = <Dynamic observe={observe} describe={describe} consumeAll />
+    const grammar = <dynamic observe={observe} describe={describe} consumeAll />
     const store = createStore()
     const options = compileAndTraverse(grammar, 't', store.register)
     expect(options).to.eql([{
@@ -104,9 +103,9 @@ describe('dynamic', () => {
       <choice>
         <sequence>
           <literal text='test' />
-          <Dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
+          <dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
         </sequence>
-        <Dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
+        <dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
       </choice>
     )
     const store = createStore()
@@ -155,9 +154,9 @@ describe('dynamic', () => {
       <choice>
         <sequence>
           <literal text='test' />
-          <Dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
+          <dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
         </sequence>
-        <Dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
+        <dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
       </choice>
     )
 
@@ -192,7 +191,7 @@ describe('dynamic', () => {
       observeSpy(input)
     }
 
-    const grammar = <Dynamic observe={observe} describe={() => {}} splitOn=' ' />
+    const grammar = <dynamic observe={observe} describe={() => {}} splitOn=' ' />
     compileAndTraverse(grammar, 'b t')
     expect(observeSpy).to.have.been.calledTwice
     expect(observeSpy).to.have.been.calledWith('b')
@@ -204,7 +203,7 @@ describe('dynamic', () => {
       return <literal text='b test' />
     }
 
-    const grammar = <Dynamic describe={describe} splitOn=' ' limit={1} />
+    const grammar = <dynamic describe={describe} splitOn=' ' limit={1} />
 
     const store = createStore()
     const options = compileAndTraverse(grammar, 'b test', store.register)
@@ -228,7 +227,7 @@ describe('dynamic', () => {
 
     const grammar = (
       <sequence>
-        <Dynamic observe={observe} describe={describe} splitOn=' ' greedy />
+        <dynamic observe={observe} describe={describe} splitOn=' ' greedy />
         <literal text=' test' />
       </sequence>
     )

@@ -1,31 +1,34 @@
 /** @jsx createElement */
 
-import {createElement, createOption, compile} from 'elliptical'
-import createProcess from './process'
+import {createElement, compile, combineProcessors} from 'elliptical'
+import createProcessor from './processor'
 import createStore from './store'
 import Observable from 'zen-observable'
 
-export default function createParser (element) {
+export default function createParser (element, otherProcessor) {
   const store = createStore()
-  const root = <base>{element}</base>
 
   let currentObserver
   let currentInput
-  const process = createProcess(store.register)
-  let traverse = compile(root, process)
+  const processor = createProcessor(store.register)
 
-  function compileAndTraverse () {
-    traverse = compile(root, process)
-    const outputs = Array.from(traverse(createOption({text: currentInput})))
+  let trueProcessor = processor
+  if (otherProcessor) {
+    trueProcessor = combineProcessors(processor, otherProcessor)
+  }
+  let parse = compile(element, trueProcessor)
+
+  function traverse () {
+    const outputs = parse(currentInput)
     currentObserver.next(outputs)
   }
 
   store.data.subscribe({
     next () {
+      parse = compile(element, trueProcessor)
       if (currentObserver) {
-        compileAndTraverse()
+        traverse()
       }
-      traverse = compile(root, process)
     }
   })
 
@@ -38,11 +41,11 @@ export default function createParser (element) {
       return new Observable((observer) => {
         currentObserver = observer
         currentInput = input
-        compileAndTraverse()
+        traverse()
       })
     },
     parse (input) {
-      return Array.from(traverse(createOption({text: input})))
+      return parse(input)
     },
     store
   }
