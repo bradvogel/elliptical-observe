@@ -9,6 +9,7 @@ export default function createProcessor (register) {
   return function process (element) {
     if (element.type.observe) {
       const source = element.type.observe(element)
+      
       const data = register(source)
 
       return _.assign({}, element, {data})

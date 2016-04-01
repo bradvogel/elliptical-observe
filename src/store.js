@@ -17,9 +17,9 @@ export default function createStore () {
         return existing.value
       } else {
         const newItem = {element}
-        const thisObservable = element.type(
-          {props: element.props, children: element.children}
-        )
+        const thisObservable = element.type(element)
+
+        items.push(newItem)
 
         thisObservable.subscribe({
           next (value) {
@@ -30,8 +30,6 @@ export default function createStore () {
             }
           }
         })
-
-        items.push(newItem)
 
         return newItem.value
       }
