@@ -49,13 +49,15 @@ describe('parser', () => {
   })
 
   it('watch allows for sources and automatically recompiles', (done) => {
-    function Source () {
-      return new Observable((observer) => {
-        observer.next('test')
-        process.nextTick(() => {
-          observer.next('totally')
+    const Source = {
+      fetch () {
+        return new Observable((observer) => {
+          observer.next('test')
+          process.nextTick(() => {
+            observer.next('totally')
+          })
         })
-      })
+      }
     }
 
     const Test = {

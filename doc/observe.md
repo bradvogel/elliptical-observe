@@ -24,12 +24,17 @@ const Superhero {
 ```
 
 Notice that `observe` returns an `Element`, just like `describe`. However,
-the `type` of this element is not a `Component` it is a `Source`.
+the `type` of this element is not a `Phrase` it is a `Source`.
 
-A `Source` is just a Function that returns an `Observable`.
+## Sources
+
+### Fetch
+
+A `Source` is an object with a function called `fetch`
+that returns an `Observable`.
 
 ```js
-function HeroSource () {
+function fetch () {
   return new Observable(observer => {
     observer.next([])
 
@@ -42,6 +47,8 @@ function HeroSource () {
     })
   })
 }
+
+const HeroSource = {fetch}
 ```
 
 Don't be scared, it's not that bad. `Observable` is a Stage 1 Draft
@@ -54,14 +61,15 @@ that uses the same interface, like
 that do not match the spec (Bacon, Kefir, Reactive-Extensions/RxJS) will
 not automatically work with elliptical.
 
-In our code, we are creating a new `Observable`. The first thing it does is
+In our `fetch` function, we are creating a new `Observable`.
+The first thing it does is
 push an empty Array, which, in this case, means that no data
 has been received yet. Then, it calls
 `fetchHeroData`, some async function. When the callback is called, it will
 pass the data to `observer.next`.
 
-What does this mean for our `Component`? Notice that our `describe` method
-has a new property - `data`. `data` will always contain the most recent
+What does this mean for our `Component`? Notice that our `describe` method's
+argument has a new property - `data`. `data` will always contain the most recent
 value from our `Observable`. `describe` can use this variable
 when it builds its element tree.
 
@@ -73,10 +81,10 @@ returned from `fetchHeroData`.
 
 Just like `describe`, `observe` has access to the component's
 `props` and `children`. It can then assign attributes to its `Source`
-elements.
+elements, which can be accessed by the `fetch` function.
 
 ```jsx
-function HeroSource ({props}) {
+function fetch ({props}) {
   return new Observable(observer => {
     observer.next([])
 
@@ -87,6 +95,8 @@ function HeroSource ({props}) {
     }
   })
 }
+
+const HeroSource = {fetch}
 
 const Superhero {
   observe ({props}) {
@@ -106,3 +116,39 @@ const outputs = createParser(<Superhero universe='DC' />)
 
 In this example, `HeroSource` is going to call `fetchDCHeroData` when it
 is compile.
+
+### Observe
+
+Sources can actually observe other sources. This works in exactly the same
+way as Phrases observing sources - they have an `observe` function which
+returns an `Element` describing a `Source`.
+
+```js
+function observe () {
+  return <HeroSource />
+}
+
+function fetch ({data}) {
+  return new Observable(observer => {
+    observer.next([])
+
+    const sidekicks = []
+    data.forEach(hero => {
+      fetchSideKickForHero(hero, (err, sidekickData) => {
+        if (err) {
+          observer.error(err)
+        } else {
+          sidekicks.push(sidekickData)
+          observer.next(sidekickData)
+        }
+      })
+    })
+  })
+}
+
+const SidekickSource = {observe, fetch}
+```
+
+Here, we have a source called `SidekickSource` that observes our
+`HeroSource` source. Whenever `HeroSource` gets new data, `fetch` will
+be called again, which uses the data to generate a new list of sidekicks.

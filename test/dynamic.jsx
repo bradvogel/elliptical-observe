@@ -14,11 +14,13 @@ chai.use(sinonChai)
 
 describe('dynamic', () => {
   it('calls observe for a specific input', () => {
-    function Test ({props}) {
-      expect(props).to.eql({input: 't'})
-      return new Observable((observer) => {
-        observer.next('test')
-      })
+    const Test = {
+      fetch ({props}) {
+        expect(props).to.eql({input: 't'})
+        return new Observable((observer) => {
+          observer.next('test')
+        })
+      }
     }
 
     function observe (input) {
@@ -43,12 +45,14 @@ describe('dynamic', () => {
   })
 
   it('calls observe for a specific input, and handles async data', (done) => {
-    function Test () {
-      return new Observable((observer) => {
-        process.nextTick(() => {
-          observer.next('totally')
+    const Test = {
+      fetch () {
+        return new Observable((observer) => {
+          process.nextTick(() => {
+            observer.next('totally')
+          })
         })
-      })
+      }
     }
 
     function observe (input) {
@@ -85,13 +89,15 @@ describe('dynamic', () => {
   })
 
   it('calls fetch for two different inputs on the same parse', () => {
-    function Test ({props}) {
-      return new Observable((observer) => {
-        observer.next(`${props.input}batman${props.input}`)
-      })
+    const Test = {
+      fetch ({props}) {
+        return new Observable((observer) => {
+          observer.next(`${props.input}batman${props.input}`)
+        })
+      }
     }
 
-    function fetch (input) {
+    function observe (input) {
       return <Test input={input} />
     }
 
@@ -103,9 +109,9 @@ describe('dynamic', () => {
       <choice>
         <sequence>
           <literal text='test' />
-          <dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
+          <dynamic observe={observe} describe={describe} id='dynamic' consumeAll />
         </sequence>
-        <dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
+        <dynamic observe={observe} describe={describe} id='dynamic' consumeAll />
       </choice>
     )
     const store = createStore()
@@ -134,13 +140,15 @@ describe('dynamic', () => {
   })
 
   it('is fine if an observe call returns nothing', () => {
-    function Test ({props}) {
-      return new Observable((observer) => {
-        observer.next(`${props.input}superman`)
-      })
+    const Test = {
+      fetch ({props}) {
+        return new Observable((observer) => {
+          observer.next(`${props.input}superman`)
+        })
+      }
     }
 
-    function fetch (input) {
+    function observe (input) {
       if (input != null) {
         return <Test input={input} />
       }
@@ -154,9 +162,9 @@ describe('dynamic', () => {
       <choice>
         <sequence>
           <literal text='test' />
-          <dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
+          <dynamic observe={observe} describe={describe} id='dynamic' consumeAll />
         </sequence>
-        <dynamic observe={fetch} describe={describe} id='dynamic' consumeAll />
+        <dynamic observe={observe} describe={describe} id='dynamic' consumeAll />
       </choice>
     )
 
@@ -211,10 +219,12 @@ describe('dynamic', () => {
   })
 
   it('can be greedy', () => {
-    function Test ({props}) {
-      return new Observable((observer) => {
-        observer.next(props.input)
-      })
+    const Test = {
+      fetch ({props}) {
+        return new Observable((observer) => {
+          observer.next(props.input)
+        })
+      }
     }
 
     function observe (input) {
