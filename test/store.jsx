@@ -19,7 +19,7 @@ describe('store', () => {
   })
 
   describe('register', () => {
-    it('takes elements whose type returns an observable', () => {
+    it('takes elements whose fetch returns an observable', () => {
       const Test = {
         fetch () {
           return new Observable((observer) => {
@@ -158,42 +158,6 @@ describe('store', () => {
         expect(nextSpy.args[1][0]).to.eql({element: <Test />, value: 4})
         done()
       })
-    })
-
-    it('calls observe for sources', () => {
-      const nextSpy = spy()
-
-      const SubTest = {
-        fetch () {
-          return new Observable((observer) => {
-            observer.next(3)
-          })
-        }
-      }
-
-      const Test = {
-        observe () {
-          return <SubTest />
-        },
-
-        fetch ({data}) {
-          expect(data).to.equal(3)
-          return new Observable((observer) => {
-            observer.next(4)
-          })
-        }
-      }
-
-      store.data.subscribe({
-        next (opt) {
-          nextSpy(opt)
-        }
-      })
-
-      store.register(<Test />)
-      expect(nextSpy).to.have.been.calledTwice
-      expect(nextSpy.args[0][0]).to.eql({element: <SubTest />, value: 3})
-      expect(nextSpy.args[1][0]).to.eql({element: _.assign(<Test />, {data: 3}), value: 4})
     })
   })
 })

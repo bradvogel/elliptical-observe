@@ -56,4 +56,28 @@ describe('process', () => {
 
     expect(register).to.have.been.calledWith(3)
   })
+
+  it('can process sources', () => {
+    function sourceProcessor (element) {
+      expect(element).to.equal(3)
+      return 6
+    }
+
+    const Test = {}
+    const Root = {
+      observe () {
+        return 3
+      },
+      describe ({data}) {
+        expect(data).to.eql(9)
+        return <Test test={data} />
+      }
+    }
+
+    const register = spy((num) => num + 3)
+    const process = createProcess(register, sourceProcessor)
+    compile(<Root />, process)
+
+    expect(register).to.have.been.calledWith(6)
+  })
 })

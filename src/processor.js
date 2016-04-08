@@ -5,10 +5,14 @@ import {createElement, compile} from 'elliptical'
 import createStore from './store'
 import Dynamic from './dynamic'
 
-export default function createProcessor (register) {
+export default function createProcessor (register, processor) {
   return function process (element) {
     if (element.type.observe) {
-      const source = element.type.observe(element)
+      let source = element.type.observe(element)
+
+      if (processor) {
+        source = processor(source)
+      }
       
       const data = register(source)
 

@@ -15,13 +15,7 @@ export default function createStore () {
       return existing.value
     } else {
       const newItem = {element}
-
       items.push(newItem)
-      if (element.type.observe) {
-        const source = element.type.observe(element)
-        const data = register(source)
-        element = _.assign({}, element, {data})
-      }
 
       const fetched = element.type.fetch(element)
 
