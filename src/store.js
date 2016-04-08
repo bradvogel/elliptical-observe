@@ -19,7 +19,7 @@ export default function createStore () {
 
       const fetched = element.type.fetch(element)
 
-      fetched.subscribe({
+      const subscription = fetched.subscribe({
         next (value) {
           newItem.value = value
 
@@ -28,10 +28,17 @@ export default function createStore () {
           }
         }
       })
+      newItem.subscription = subscription
 
       return newItem.value
     }
   }
 
-  return {data, register}
+  function remove (item) {
+    const index = items.indexOf(item)
+    const removed = items.splice(index, 1)
+    removed[0].subscription.unsubscribe()
+  }
+
+  return {data, register, items, remove}
 }
