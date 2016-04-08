@@ -1,6 +1,6 @@
 {
   "name": "elliptical-observe",
-  "version": "1.0.0-rc5",
+  "version": "1.0.0-rc6",
   "description": "Sideways Data Loading for Elliptical",
   "main": "lib/index.js",
   "scripts": {
