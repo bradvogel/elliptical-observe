@@ -57,6 +57,31 @@ describe('process', () => {
     expect(register).to.have.been.calledWith(3)
   })
 
+  it('passes result of register to visit as data', () => {
+    const Test = {}
+    const Root = {
+      observe () {
+        return 3
+      },
+      visit (opt, {data}, traverse) {
+        expect(opt.text).to.equal('test')
+        expect(data).to.eql(6)
+        return traverse(<literal text='test' value={data}/>, opt)
+      }
+    }
+
+    const register = spy((num) => num + 3)
+    const process = createProcess(register)
+    const parse = compile(<Root />, process)
+
+    expect(register).to.have.been.calledWith(3)
+    
+    const options = parse('test')
+    expect(options).to.have.length(1)
+    expect(options[0].result).to.equal(6)
+  })
+
+
   it('can process sources', () => {
     function sourceProcessor (element) {
       expect(element).to.equal(3)

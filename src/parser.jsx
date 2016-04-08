@@ -25,7 +25,6 @@ export default function createParser (element, otherProcessor) {
 
   store.data.subscribe({
     next () {
-      parse = compile(element, trueProcessor)
       if (currentObserver) {
         traverse()
       }
