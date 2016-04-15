@@ -3,7 +3,7 @@
 
 import {createElement, compile} from 'elliptical'
 import chai, {expect} from 'chai'
-import createProcess from '../src/processor'
+import createProcessor from '../src/processor'
 import {spy} from 'sinon'
 import sinonChai from 'sinon-chai'
 
@@ -17,7 +17,7 @@ describe('process', () => {
       }
     }
     const register = spy()
-    const process = createProcess(register)
+    const process = createProcessor(register)
     compile(<Test />, process)
 
     expect(register).to.have.been.calledWith(3)
@@ -32,33 +32,51 @@ describe('process', () => {
       }
     }
     const register = spy()
-    const process = createProcess(register)
+    const process = createProcessor(register)
     compile(<Test num={3} />, process)
 
     expect(register).to.have.been.calledWith(6)
   })
 
   it('passes result of register to describe as data', () => {
-    const Test = {}
     const Root = {
       observe () {
         return 3
       },
       describe ({data}) {
         expect(data).to.eql(6)
-        return <Test test={data} />
+        return <literal text='test' value={data} />
       }
     }
 
     const register = spy((num) => num + 3)
-    const process = createProcess(register)
+    const process = createProcessor(register)
     compile(<Root />, process)
 
     expect(register).to.have.been.calledWith(3)
   })
 
+  it('does not recompile unless changed', () => {
+    const describeSpy = spy()
+    const Root = {
+      observe () {},
+      describe ({data}) {
+        describeSpy()
+        return <literal text='test' value={data} />
+      }
+    }
+
+    const register = () => 6
+    const process = createProcessor(register)
+    const parse = compile(<Root />, process)
+
+    parse('')
+    parse('t')
+    parse('te')
+    expect(describeSpy).to.have.been.calledOnce
+  })
+
   it('passes result of register to visit as data', () => {
-    const Test = {}
     const Root = {
       observe () {
         return 3
@@ -71,7 +89,7 @@ describe('process', () => {
     }
 
     const register = spy((num) => num + 3)
-    const process = createProcess(register)
+    const process = createProcessor(register)
     const parse = compile(<Root />, process)
 
     expect(register).to.have.been.calledWith(3)
@@ -80,7 +98,6 @@ describe('process', () => {
     expect(options).to.have.length(1)
     expect(options[0].result).to.equal(6)
   })
-
 
   it('can process sources', () => {
     function sourceProcessor (element) {
@@ -100,7 +117,7 @@ describe('process', () => {
     }
 
     const register = spy((num) => num + 3)
-    const process = createProcess(register, sourceProcessor)
+    const process = createProcessor(register, sourceProcessor)
     compile(<Root />, process)
 
     expect(register).to.have.been.calledWith(6)
