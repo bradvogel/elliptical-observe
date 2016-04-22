@@ -87,6 +87,31 @@ describe('process', () => {
     const Root = {
       observe () {},
       describe ({data}) {
+        return <Child data={data} />
+      }
+    }
+
+    const register = () => 6
+    const process = createProcessor(register)
+    const parse = compile(<Root />, process)
+
+    parse('')
+    parse('t')
+    parse('te')
+    expect(describeSpy).to.have.been.calledOnce
+  })
+
+  it('does not recompile children unless changed (nested)', () => {
+    const describeSpy = spy()
+    const Child = {
+      describe ({ props }) {
+        describeSpy()
+        return <literal text='test' value={props.data} />
+      }
+    }
+    const Root = {
+      observe () {},
+      describe ({data}) {
         return (
           <sequence>
             <literal text='test' />
