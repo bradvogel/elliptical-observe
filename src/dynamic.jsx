@@ -19,20 +19,20 @@ function * optionsForString (string, option, props, register, traverse) {
   }
 }
 
-function * optionsForSubstrings (option, props, register, traverse) {
+function * traversesForSubstrings (option, props, register, traverse) {
   const iterations = option.text == null
     ? [undefined]
     : substrings(option.text, props)
 
   for (let substring of iterations) {
     let success = false
-    yield* optionsForString(substring, option, props, register, traverse)
+    yield optionsForString(substring, option, props, register, traverse)
   }
 }
 
 function * visit (option, {props, register}, traverse) {
-  const options = optionsForSubstrings(option, props, register, traverse)
-  yield * limitIterator(options, props.limit)
+  const traverses = traversesForSubstrings(option, props, register, traverse)
+  yield * limitIterator(traverses, props.limit)
 }
 
 export default {visit}

@@ -218,6 +218,23 @@ describe('dynamic', () => {
     expect(options).to.have.length(1)
   })
 
+  it('limiting limits splits, not child branches', () => {
+    function describe () {
+      return <list items={['super', 'bat']} />
+    }
+
+    const grammar = (
+      <sequence>
+        <dynamic describe={describe} limit={1} />
+        <literal text='man' />
+      </sequence>
+    )
+
+    const store = createStore()
+    const options = compileAndTraverse(grammar, '', store.register)
+    expect(options).to.have.length(2)
+  })
+
   it('can be greedy', () => {
     const Test = {
       fetch ({props}) {
