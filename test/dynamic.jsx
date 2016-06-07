@@ -206,6 +206,20 @@ describe('dynamic', () => {
     expect(observeSpy).to.have.been.calledWith('b t')
   })
 
+  it('calls observe for multiple splits (regex)', () => {
+    const observeSpy = spy()
+
+    function observe (input) {
+      observeSpy(input)
+    }
+
+    const grammar = <dynamic observe={observe} describe={() => {}} splitOn={/\s|,/} />
+    compileAndTraverse(grammar, 'b t')
+    expect(observeSpy).to.have.been.calledTwice
+    expect(observeSpy).to.have.been.calledWith('b')
+    expect(observeSpy).to.have.been.calledWith('b t')
+  })
+
   it('can be limited', () => {
     function describe (data) {
       return <literal text='b test' />
