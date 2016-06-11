@@ -25,7 +25,6 @@ function * traversesForSubstrings (option, props, register, traverse) {
     : substrings(option.text, props)
 
   for (let substring of iterations) {
-    let success = false
     yield optionsForString(substring, option, props, register, traverse)
   }
 }
