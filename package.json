@@ -8,9 +8,9 @@
   "scripts": {
     "test": "cross-env BABEL_ENV=node mocha --compilers jsx:babel-register --watch-extensions jsx",
     "build": "npm run build:es & npm run build:browser & npm run build:node & wait",
-    "build:es": "mkdir -p build; cross-env BABEL_ENV=es babel src --out-dir lib-es",
-    "build:browser": "mkdir -p build; cross-env BABEL_ENV=browser babel src --out-dir lib-browser",
-    "build:node": "mkdir -p build; cross-env BABEL_ENV=node babel src --out-dir lib-node",
+    "build:es": "cross-env BABEL_ENV=es babel src --out-dir lib-es",
+    "build:browser": "cross-env BABEL_ENV=browser babel src --out-dir lib-browser",
+    "build:node": "cross-env BABEL_ENV=node babel src --out-dir lib-node",
     "clean": "rimraf lib-browser lib-node lib-es",
     "prepublish": "npm run clean && npm run build"
   },
