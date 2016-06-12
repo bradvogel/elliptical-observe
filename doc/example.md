@@ -19,7 +19,7 @@ function CountrySource () {
       }
     })
   })
-})
+}
 
 const Country = {
   observe () {
